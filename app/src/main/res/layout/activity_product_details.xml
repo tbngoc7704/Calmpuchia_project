@@ -124,17 +124,39 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- Product Price -->
-            <TextView
-                android:id="@+id/product_price_details"
+            <!-- Product Price Layout -->
+            <LinearLayout
+                android:id="@+id/price_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="$49.99"
-                android:textColor="@android:color/holo_red_dark"
-                android:textStyle="bold"
-                android:textSize="28sp" />
+                android:paddingEnd="16dp">
+
+                <!-- Discount Price (hiển thị đầu tiên khi có discount) -->
+                <TextView
+                    android:id="@+id/product_discount_price_details"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$39.99"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    android:visibility="gone"
+                    android:layout_marginEnd="12dp" />
+
+                <!-- Original Price -->
+                <TextView
+                    android:id="@+id/product_price_details"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$49.99"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:textStyle="bold"
+                    android:textSize="28sp" />
+
+            </LinearLayout>
 
             <!-- Product Description -->
             <TextView
@@ -191,6 +213,7 @@
                 android:textStyle="bold"
                 android:backgroundTint="@color/purple_500"
                 android:textColor="@android:color/white" />
+
             <!-- Related Products Section -->
             <TextView
                 android:id="@+id/related_products_title"

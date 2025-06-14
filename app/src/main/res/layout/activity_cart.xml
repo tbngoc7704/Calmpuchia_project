@@ -2,136 +2,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/main"
     android:background="#FFFFFF">
 
     <!-- Header -->
     <LinearLayout
-        android:layout_marginTop="0dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="0dp"
+        android:orientation="horizontal"
         android:background="#ff6750a4"
+        android:padding="12dp"
         android:gravity="center_vertical">
 
-        <!-- Nút Back -->
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:adjustViewBounds="true"
             android:background="@android:color/transparent"
-            android:contentDescription="Back"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/ic_back" />
+            android:src="@mipmap/ic_back"
+            android:contentDescription="Back" />
 
-        <!-- TextView Cart (centered) -->
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cart"
+            android:text="Giỏ hàng"
             android:gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 
-
-
-    <LinearLayout
-        android:layout_marginTop="16dp"
-        android:orientation="vertical"
+    <!-- Danh sách sản phẩm -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
 
+    <!-- Tổng tiền + Thanh toán -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="#F8F8F8"
+        android:gravity="center_vertical">
 
-        <!-- Sản phẩm 1 -->
+        <!-- Tổng tiền -->
         <TextView
+            android:id="@+id/totalPriceText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tổng: 0 đ"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <!-- Button Thanh toán -->
+        <Button
+            android:id="@+id/btnCheckout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Calmpuchia"
-            android:textSize="23sp"
-            android:textStyle="bold" />
+            android:text="Thanh toán"
+            android:textStyle="bold"
+            android:backgroundTint="#ff6750a4"
+            android:textColor="#FFFFFF"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@mipmap/ic_producta" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginStart="8dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:text="Product A"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:text="₫100.000"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FF5722"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageButton
-                    android:id="@+id/btnMinus"
-                    android:layout_weight="1"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@android:color/transparent"
-                    android:src="@mipmap/ic_minus"
-                    android:contentDescription="Minus" />
-
-                <TextView
-                    android:id="@+id/quantity_text"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textSize="16sp" />
-
-                <ImageButton
-                    android:id="@+id/btnPlus"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:src="@mipmap/ic_plus"
-                    android:contentDescription="Plus" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_checkout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Continue to Payment"
-            android:textAllCaps="false"
-            android:layout_marginTop="490dp"
-            android:background="#FF5722"
-            android:textColor="#FFFFFF" />
     </LinearLayout>
 </LinearLayout>

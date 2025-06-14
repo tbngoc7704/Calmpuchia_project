@@ -62,8 +62,25 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation("com.google.firebase:firebase-firestore")
+    implementation ("com.google.android.material:material:1.8.0")
+    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+        // Firebase
+    implementation ("com.google.firebase:firebase-auth:21.1.0")
+    implementation ("com.google.firebase:firebase-database:20.1.0")
+    implementation ("com.google.firebase:firebase-storage:20.1.0")
 
-
-
-
+        // Image handling
+    implementation ("com.github.bumptech.glide:glide:4.14.2")
+    implementation ("com.github.yalantis:ucrop:2.2.6")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+        // Material Design
+    implementation ("com.google.android.material:material:1.8.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+    // For HTTP requests (OkHttp)
+    implementation ("com.squareup.okhttp3:okhttp:4.10.0")
+    // RecyclerView và CardView
+    implementation ("androidx.recyclerview:recyclerview:1.2.1")
+    implementation ("androidx.cardview:cardview:1.0.0")
 }
+

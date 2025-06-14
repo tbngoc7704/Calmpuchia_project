@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
@@ -8,8 +7,6 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     tools:context=".MainActivity">
-
-    <!-- Top Header Bar - Green Background -->
 
     <!-- Top Header Bar - Green Background -->
     <androidx.appcompat.widget.Toolbar
@@ -20,6 +17,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
@@ -55,8 +53,7 @@
                     android:layout_marginEnd="4dp"
                     android:contentDescription="Favorite"
                     android:scaleType="centerInside"
-                    android:src="@mipmap/ic_logo_account"
-                    app:srcCompat="@mipmap/ic_check" />
+                    android:src="@mipmap/ic_logo_account" />
 
                 <ImageView
                     android:id="@+id/notificationIcon"
@@ -65,8 +62,7 @@
                     android:layout_marginEnd="4dp"
                     android:contentDescription="Notification"
                     android:scaleType="centerInside"
-                    android:src="@mipmap/ic_icon_cart"
-                    app:srcCompat="@mipmap/ic_gps" />
+                    android:src="@mipmap/ic_icon_cart" />
 
                 <ImageView
                     android:id="@+id/cartIcon"
@@ -74,7 +70,7 @@
                     android:layout_height="36dp"
                     android:contentDescription="Cart"
                     android:scaleType="centerInside"
-                    app:srcCompat="@mipmap/ic_order" />
+                    android:src="@mipmap/ic_order" />
             </LinearLayout>
 
             <!-- Thanh tìm kiếm nằm giữa với margin được điều chỉnh -->
@@ -97,7 +93,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_marginStart="15dp"
-                        app:srcCompat="@mipmap/ic_icon_search" />
+                        android:src="@mipmap/ic_icon_search" />
 
                     <EditText
                         android:id="@+id/searchEditText"
@@ -111,7 +107,6 @@
             </androidx.cardview.widget.CardView>
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
-
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -379,7 +374,6 @@
                 </LinearLayout>
             </androidx.gridlayout.widget.GridLayout>
 
-
             <!-- Flash Deals Header -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -461,6 +455,7 @@
                     android:textColor="#FFFFFF"
                     android:textSize="14sp" />
             </LinearLayout>
+
             <!-- Grid of Product Cards -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -524,45 +519,6 @@
                     </androidx.cardview.widget.CardView>
 
                     <!-- Product Card 2 -->
-                    <!-- Thêm các card tương tự, bạn có thể nhân bản hoặc dùng RecyclerView sau -->
-                    <!-- Ví dụ tiếp theo -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="100dp"
-                                android:scaleType="centerCrop"
-                                android:src="@mipmap/ic_launcher_round" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Product B"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:maxLines="1" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="$29.99"
-                                android:textSize="13sp"
-                                android:textColor="#FF5722" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -602,155 +558,228 @@
                     </androidx.cardview.widget.CardView>
 
                     <!-- Product Card 3 -->
-                    <!-- ... Thêm các thẻ tiếp theo ở đây ... -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:scaleType="centerCrop"
+                                android:src="@mipmap/ic_launcher_round" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Product C"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:maxLines="1" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="$29.99"
+                                android:textSize="13sp"
+                                android:textColor="#FF5722" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
                 </GridLayout>
             </LinearLayout>
 
             <!-- Hot Deals Near You Section -->
             <LinearLayout
+                android:id="@+id/hotDealsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp">
+                android:padding="16dp"
+                android:background="#FAFAFA"
+                android:layout_marginTop="8dp">
+                <!--android:visibility=""-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:text="Hot Deals Near You"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <GridLayout
-                    android:id="@+id/hotDealsGrid"
+                <!-- Header Section -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:columnCount="3"
-                    android:alignmentMode="alignMargins"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="12dp">
 
-                    android:useDefaultMargins="true">
+                    <!-- Location Icon -->
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_location"
+                        android:layout_marginEnd="8dp"
+                        app:tint="#0F9D59" />
 
-                    <!-- Hot Deal Product Card 1 -->
-                    <androidx.cardview.widget.CardView
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/hotDealsTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="4dp">
+                        android:layout_weight="1"
+                        android:text="Hot Deals Near You"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#333333"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?android:attr/selectableItemBackground" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="100dp"
-                                android:scaleType="centerCrop"
-                                android:src="@mipmap/ic_launcher_round" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Hot Deal A"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:maxLines="1" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="$15.99"
-                                android:textSize="13sp"
-                                android:textColor="#FF5722" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Hot Deal Product Card 2 -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
+                    <!-- Badge for deal count -->
+                    <TextView
+                        android:id="@+id/hotDealsBadge"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="4dp">
+                        android:text="6 deals"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/badge_background"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_marginEnd="8dp"
+                        android:visibility="gone" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="100dp"
-                                android:scaleType="centerCrop"
-                                android:src="@mipmap/ic_launcher" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Hot Deal B"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:maxLines="1" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="$12.99"
-                                android:textSize="13sp"
-                                android:textColor="#FF5722" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Hot Deal Product Card 3 -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
+                    <!-- View All Button -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="4dp">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:padding="4dp">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="8dp">
+                            android:text="View all"
+                            android:textSize="14sp"
+                            android:textColor="#0F9D59"
+                            android:textStyle="bold" />
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="100dp"
-                                android:scaleType="centerCrop"
-                                android:src="@mipmap/ic_launcher_round" />
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:layout_marginStart="4dp"
+                            app:tint="#0F9D59" />
+                    </LinearLayout>
+                </LinearLayout>
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Hot Deal C"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:maxLines="1" />
+                <!-- Distance Info -->
+                <TextView
+                    android:id="@+id/distanceInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Within 10 km from your location"
+                    android:textSize="12sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="12dp"
+                    android:drawableStart="@drawable/ic_info"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_vertical"
+                    android:visibility="gone" />
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="$18.99"
-                                android:textSize="13sp"
-                                android:textColor="#FF5722" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                <!-- Loading Progress -->
+                <ProgressBar
+                    android:id="@+id/loadingProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="24dp"
+                    android:indeterminateTint="#0F9D59"
+                    android:visibility="gone" />
 
-                </GridLayout>
+                <!-- Empty State -->
+                <LinearLayout
+                    android:id="@+id/emptyStateLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_location_off"
+                        android:alpha="0.5"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No hot deals found near you"
+                        android:textSize="16sp"
+                        android:textColor="#666666"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Try adjusting your location or check back later"
+                        android:textSize="14sp"
+                        android:textColor="#999999"
+                        android:gravity="center"
+                        android:layout_marginBottom="16dp" />
+
+                    <Button
+                        android:id="@+id/refreshButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Refresh"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/button_primary"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        style="?android:attr/borderlessButtonStyle" />
+                </LinearLayout>
+
+                <!-- RecyclerView for Hot Deals -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/hotDealsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp" />
+
+                <!-- Load More Button (Optional) -->
+                <Button
+                    android:id="@+id/loadMoreButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Load More Deals"
+                    android:textColor="#0F9D59"
+                    android:background="@drawable/button_outline"
+                    android:layout_marginTop="12dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:visibility="gone"
+                    style="?android:attr/borderlessButtonStyle" />
             </LinearLayout>
-
             <!-- Popular Section -->
             <LinearLayout
                 android:layout_width="match_parent"

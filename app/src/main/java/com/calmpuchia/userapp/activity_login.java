@@ -1,7 +1,6 @@
 package com.calmpuchia.userapp;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -10,21 +9,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.calmpuchia.userapp.model.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.calmpuchia.userapp.Prevalent;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.calmpuchia.userapp.model.User;
 
 
 public class activity_login extends AppCompatActivity {
@@ -96,7 +89,7 @@ public class activity_login extends AppCompatActivity {
                             Prevalent.currentOnlineUser = user;
 
                             Toast.makeText(getApplicationContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(activity_login.this, ProductListActivity.class);
+                            Intent intent = new Intent(activity_login.this, HomepageActivity.class);
                             startActivity(intent);
                             finish();
                         } else {

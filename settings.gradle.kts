@@ -17,6 +17,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         jcenter()
+        maven { url = uri("https://jitpack.io") }
+        // Thêm các repository khác nếu cần
+        maven { url = uri("https://maven.fabric.io/public") }
     }
 }
 

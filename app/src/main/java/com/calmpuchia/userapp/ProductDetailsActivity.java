@@ -1,11 +1,13 @@
 package com.calmpuchia.userapp;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,10 +34,13 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private Button addToCartButton;
     private ImageView productImage;
     private ImageButton btnIncrease, btnDecrease;
-    private TextView productPrice, productDescription, productName, numberText;
+    private TextView productPrice, productDiscountPrice, productDescription, productName, numberText;
+    private LinearLayout priceLayout;
     private String productID = "";
     private int quantity = 1;
     private double unitPrice = 0.0;
+    private double discountPrice = 0.0;
+    private boolean hasDiscount = false;
     private String name = "";
     private String image = "";
     private ArrayList<String> descriptionList;
@@ -58,6 +63,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
         productName = findViewById(R.id.product_name_details);
         productDescription = findViewById(R.id.product_description_details);
         productPrice = findViewById(R.id.product_price_details);
+        productDiscountPrice = findViewById(R.id.product_discount_price_details);
+        priceLayout = findViewById(R.id.price_layout);
         numberText = findViewById(R.id.number_text);
         btnIncrease = findViewById(R.id.btn_increase);
         btnDecrease = findViewById(R.id.btn_decrease);
@@ -115,8 +122,16 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             name = product.getName();
                             unitPrice = product.getPrice();
 
+                            // Kiểm tra discount price
+                            if (product.getDiscount_price() != null && product.getDiscount_price() > 0) {
+                                discountPrice = product.getDiscount_price();
+                                hasDiscount = true;
+                            } else {
+                                hasDiscount = false;
+                            }
+
                             productName.setText(name);
-                            productPrice.setText("Giá: " + unitPrice + " đ");
+                            updatePriceDisplay();
                             updateTotalPrice();
 
                             // Mô tả sản phẩm
@@ -131,8 +146,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             }
 
                             // Ảnh sản phẩm
-                            if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
-                                image = product.getImageUrl();
+                            if (product.getImage_url() != null && !product.getImage_url().isEmpty()) {
+                                image = product.getImage_url();
                             }
                             Glide.with(this)
                                     .load(image)
@@ -147,9 +162,29 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi tải dữ liệu sản phẩm.", Toast.LENGTH_SHORT).show());
     }
 
+    private void updatePriceDisplay() {
+        if (hasDiscount) {
+            // Hiển thị cả giá gốc (gạch ngang) và giá discount
+            productPrice.setText(unitPrice + " đ");
+            productPrice.setPaintFlags(productPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            productPrice.setTextColor(getResources().getColor(android.R.color.darker_gray));
+
+            productDiscountPrice.setText(discountPrice + " đ");
+            productDiscountPrice.setVisibility(View.VISIBLE);
+        } else {
+            // Chỉ hiển thị giá gốc
+            productPrice.setText(unitPrice + " đ");
+            productPrice.setPaintFlags(productPrice.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            productPrice.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+
+            productDiscountPrice.setVisibility(View.GONE);
+        }
+    }
 
     private void updateTotalPrice() {
-        double totalPrice = unitPrice * quantity;
+        double effectivePrice = hasDiscount ? discountPrice : unitPrice;
+        double totalPrice = effectivePrice * quantity;
+        // Có thể thêm logic hiển thị total price nếu cần
     }
 
     private void addingToCartList() {
@@ -160,20 +195,30 @@ public class ProductDetailsActivity extends AppCompatActivity {
         SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm:ss a");
         saveCurrentTime = currentTime.format(calForDate.getTime());
 
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập trước khi thêm vào giỏ hàng.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, activity_login.class));
+            return;
+        }
+        String userId = auth.getCurrentUser().getUid();
+
         DatabaseReference cartListRef = FirebaseDatabase.getInstance().getReference().child("Cart List");
 
-        double totalPrice = unitPrice * quantity; // tính total price
+        // Sử dụng giá hiệu quả (discount price nếu có, ngược lại là price gốc)
+        double effectivePrice = hasDiscount ? discountPrice : unitPrice;
+        double totalPrice = effectivePrice * quantity;
 
         HashMap<String, Object> cartMap = new HashMap<>();
         cartMap.put("pid", productID);
         cartMap.put("name", name);
-        cartMap.put("price", unitPrice);
+        cartMap.put("price", effectivePrice); // Lưu giá hiệu quả vào trường price
         cartMap.put("date", saveCurrentDate);
         cartMap.put("time", saveCurrentTime);
         cartMap.put("quantity", quantity);
-        cartMap.put("total_price", totalPrice); // lưu total price vào Firebase
-        cartMap.put("discount_price", "");
+        cartMap.put("total_price", totalPrice);
+        cartMap.put("discount_price", hasDiscount ? String.valueOf(discountPrice) : "");
+        cartMap.put("image_url", image);
 
         cartListRef.child("User View").child(userId)
                 .child("Products").child(productID)
@@ -186,7 +231,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                 .addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
                                         Toast.makeText(ProductDetailsActivity.this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(ProductDetailsActivity.this, HomepageActivity.class));
+                                        startActivity(new Intent(ProductDetailsActivity.this, CartActivity.class));
                                         finish();
                                     }
                                 });

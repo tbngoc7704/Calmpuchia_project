@@ -26,11 +26,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
@@ -66,8 +64,9 @@ public class EditUserActivity extends AppCompatActivity {
     private boolean imageChanged = false;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference usersRef;
+    private FirebaseFirestore firestore;
     private String currentUserId;
+    private ListenerRegistration userListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +81,12 @@ public class EditUserActivity extends AppCompatActivity {
         });
 
         mAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             currentUserId = currentUser.getUid();
         }
-
-        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         initViews();
         loadUserInfo();
@@ -127,33 +126,35 @@ public class EditUserActivity extends AppCompatActivity {
             return;
         }
 
-        usersRef.child(currentUserId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    User user = snapshot.getValue(User.class);
-                    if (user != null) {
-                        fullNameEditText.setText(user.getName());
-                        userPhoneEditText.setText(user.getPhone());
-                        addressEditText.setText(user.getAddress());
-
-                        if (user.getImage() != null && !user.getImage().isEmpty()) {
-                            imageUrl = user.getImage();
-                            Glide.with(EditUserActivity.this)
-                                    .load(user.getImage())
-                                    .placeholder(R.mipmap.profile)
-                                    .error(R.mipmap.profile)
-                                    .into(profileImageView);
-                        }
+        // Sử dụng Firestore để lấy thông tin user
+        userListener = firestore.collection("users").document(currentUserId)
+                .addSnapshotListener((documentSnapshot, e) -> {
+                    if (e != null) {
+                        Log.e(TAG, "Listen failed.", e);
+                        Toast.makeText(EditUserActivity.this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(EditUserActivity.this, "Failed: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            fullNameEditText.setText(user.getName());
+                            userPhoneEditText.setText(user.getPhone());
+                            addressEditText.setText(user.getAddress());
+
+                            if (user.getImage() != null && !user.getImage().isEmpty()) {
+                                imageUrl = user.getImage();
+                                Glide.with(EditUserActivity.this)
+                                        .load(user.getImage())
+                                        .placeholder(R.mipmap.profile)
+                                        .error(R.mipmap.profile)
+                                        .into(profileImageView);
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "Current data: null");
+                    }
+                });
     }
 
     private void saveUserInfo() {
@@ -374,7 +375,7 @@ public class EditUserActivity extends AppCompatActivity {
         }).start();
     }
 
-    // Fallback: Save image as Base64 directly in Firebase Database
+    // Fallback: Save image as Base64 directly in Firestore
     private void saveImageAsBase64() {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Saving image...");
@@ -388,7 +389,7 @@ public class EditUserActivity extends AppCompatActivity {
                 Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(
                         getContentResolver(), imageUri);
 
-                // Resize smaller for Base64 storage (to avoid Firebase size limits)
+                // Resize smaller for Base64 storage (to avoid Firestore size limits)
                 bitmap = resizeBitmap(bitmap, 300); // Smaller size for Base64
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -410,83 +411,6 @@ public class EditUserActivity extends AppCompatActivity {
                 });
             }
         }).start();
-    }
-
-    // Alternative: Upload to PostImage (another free service)
-    private void uploadImageToPostImage() {
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Uploading Image...");
-        progressDialog.setMessage("Please wait");
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.show();
-
-        try {
-            // Convert URI to Bitmap
-            Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(
-                    getContentResolver(), imageUri);
-            bitmap = resizeBitmap(bitmap, 800);
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-            byte[] imageBytes = baos.toByteArray();
-
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .build();
-
-            RequestBody requestBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("upload", "image.jpg",
-                            RequestBody.create(MediaType.parse("image/jpeg"), imageBytes))
-                    .build();
-
-            Request request = new Request.Builder()
-                    .url("https://postimg.cc/json")
-                    .post(requestBody)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    runOnUiThread(() -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(EditUserActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String responseBody = response.body().string();
-
-                    runOnUiThread(() -> {
-                        progressDialog.dismiss();
-
-                        if (response.isSuccessful()) {
-                            try {
-                                JSONObject jsonResponse = new JSONObject(responseBody);
-                                if (jsonResponse.getString("status").equals("OK")) {
-                                    imageUrl = jsonResponse.getString("url");
-                                    updateUserInfoToDatabase();
-                                } else {
-                                    Toast.makeText(EditUserActivity.this, "Upload failed", Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                Toast.makeText(EditUserActivity.this, "Failed to parse response", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(EditUserActivity.this, "Upload failed: " + response.message(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
-
-        } catch (Exception e) {
-            progressDialog.dismiss();
-            Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
     }
 
     private Bitmap resizeBitmap(Bitmap bitmap, int maxSize) {
@@ -517,14 +441,16 @@ public class EditUserActivity extends AppCompatActivity {
 
         userMap.put("lastUpdated", System.currentTimeMillis());
 
-        usersRef.child(currentUserId).updateChildren(userMap)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(EditUserActivity.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(EditUserActivity.this, "Database update failed.", Toast.LENGTH_SHORT).show();
-                    }
+        // Sử dụng Firestore để cập nhật thông tin user
+        firestore.collection("users").document(currentUserId)
+                .update(userMap)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(EditUserActivity.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error updating user profile", e);
+                    Toast.makeText(EditUserActivity.this, "Database update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -551,6 +477,15 @@ public class EditUserActivity extends AppCompatActivity {
         } else if (resultCode == UCrop.RESULT_ERROR) {
             Throwable cropError = UCrop.getError(data);
             Toast.makeText(this, "Crop error: " + (cropError != null ? cropError.getMessage() : "Unknown error"), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Cleanup listener
+        if (userListener != null) {
+            userListener.remove();
         }
     }
 }

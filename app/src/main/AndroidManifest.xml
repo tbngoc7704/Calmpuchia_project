@@ -26,6 +26,18 @@
             android:name=".NearbyProductsActivity"
             android:exported="false" />
         <activity
+            android:name=".StoreProductsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NearbyStoresActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TestGeocodingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".StoreIdAssignerActivity"
             android:exported="false" />
         <activity

@@ -38,4 +38,7 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="cornerRadius">8dp</item>
     </style>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_value">Value\n</string>
 </resources>

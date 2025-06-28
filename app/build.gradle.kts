@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.googleid)
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation(libs.play.services.analytics.impl)
+    implementation(libs.swiperefreshlayout)
     // ✅ Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

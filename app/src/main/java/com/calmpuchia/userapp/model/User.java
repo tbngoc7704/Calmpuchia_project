@@ -12,6 +12,8 @@ public class User {
     private double lng;
     private boolean hasLocation;
     private long locationUpdatedTime;
+    private long lastUpdated;
+    private int coins;
 
     public User() {
         // Required empty constructor for Firebase
@@ -106,5 +108,21 @@ public class User {
         long oneDayInMillis = 24 * 60 * 60 * 1000; // 24 giờ
 
         return timeDiff > oneDayInMillis;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
     }
 }

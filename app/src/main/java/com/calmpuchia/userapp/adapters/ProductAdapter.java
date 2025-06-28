@@ -2,11 +2,15 @@ package com.calmpuchia.userapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
+
     private Context context;
     private List<Product> productList;
     private OnProductClickListener onProductClickListener;
@@ -29,7 +34,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         this.productList = list != null ? list : new ArrayList<>();
     }
 
-    // Interface cho product click listener
     public interface OnProductClickListener {
         void onProductClick(Product product);
     }
@@ -38,24 +42,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         this.onProductClickListener = listener;
     }
 
-    // Method để update danh sách sản phẩm
-    public void updateProducts(List<Product> newProducts) {
-        if (newProducts != null) {
-            this.productList.clear();
-            this.productList.addAll(newProducts);
-            notifyDataSetChanged();
-        }
-    }
-
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView imgProduct;
-        TextView txtName, txtPrice;
+        TextView txtName, txtPrice, txtRating, txtRatingCount, txtSold;
 
         public ProductViewHolder(View itemView) {
             super(itemView);
             imgProduct = itemView.findViewById(R.id.imgProduct);
             txtName = itemView.findViewById(R.id.txtName);
             txtPrice = itemView.findViewById(R.id.txtPrice);
+            txtRating = itemView.findViewById(R.id.txtRating);
+            txtRatingCount = itemView.findViewById(R.id.txtRatingCount);
+            txtSold = itemView.findViewById(R.id.txtSold);
         }
     }
 
@@ -67,80 +65,63 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     @Override
     public void onBindViewHolder(ProductViewHolder holder, int position) {
-        if (position < 0 || position >= productList.size()) {
-            return;
-        }
+        try {
+            Product product = productList.get(position);
+            if (product == null) return;
 
-        Product product = productList.get(position);
-        if (product == null) {
-            return;
-        }
+            // Tên sản phẩm
+            holder.txtName.setText(product.getName() != null ? product.getName() : "Tên sản phẩm");
 
-        // Set tên sản phẩm
-        if (product.getName() != null) {
-            holder.txtName.setText(product.getName());
-        } else {
-            holder.txtName.setText("Tên sản phẩm không có");
-        }
+            // Giá sản phẩm
+            NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+            if (product.hasDiscount()) {
+                String formattedDiscount = formatter.format(product.getDiscount_price()) + " đ";
+                String formattedOriginal = formatter.format(product.getPrice()) + " đ";
 
-        // Set giá sản phẩm với format tiền tệ
-        if (product.getPrice() != null) {
-            try {
-                NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+                holder.txtPrice.setText(formattedDiscount + "  ");
+                holder.txtPrice.append(formattedOriginal);
+                holder.txtPrice.setPaintFlags(holder.txtPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            } else if (product.getPrice() != null) {
                 String formattedPrice = formatter.format(product.getPrice()) + " đ";
                 holder.txtPrice.setText(formattedPrice);
-            } catch (Exception e) {
-                holder.txtPrice.setText(product.getPrice() + " đ");
-            }
-        } else {
-            holder.txtPrice.setText("Giá: Liên hệ");
-        }
-
-        // Load hình ảnh sản phẩm
-        if (product.getImage_url() != null && !product.getImage_url().isEmpty()) {
-            Glide.with(context)
-                    .load(product.getImage_url())
-                    .placeholder(R.mipmap.ic_producta)
-                    .error(R.mipmap.ic_producta)
-                    .into(holder.imgProduct);
-        } else {
-            holder.imgProduct.setImageResource(R.mipmap.ic_producta);
-        }
-
-        // Set click listener cho item
-        holder.itemView.setOnClickListener(v -> {
-            if (onProductClickListener != null) {
-                onProductClickListener.onProductClick(product);
             } else {
-                // Fallback - mở chi tiết sản phẩm trực tiếp
-                openProductDetails(product);
+                holder.txtPrice.setText("Giá: Liên hệ");
             }
-        });
+
+            // Hình ảnh sản phẩm
+            if (!TextUtils.isEmpty(product.getImage_url())) {
+                Glide.with(context)
+                        .load(product.getImage_url())
+                        .placeholder(R.drawable.placeholder_product)
+                        .into(holder.imgProduct);
+            } else {
+                holder.imgProduct.setImageResource(R.drawable.placeholder_product);
+            }
+
+
+            // Click để mở chi tiết
+            holder.itemView.setOnClickListener(v -> {
+                if (onProductClickListener != null) {
+                    onProductClickListener.onProductClick(product);
+                } else {
+                    openProductDetails(product);
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e("ProductAdapter", "Lỗi khi binding sản phẩm: " + e.getMessage(), e);
+        }
     }
 
     private void openProductDetails(Product product) {
         Intent intent = new Intent(context, ProductDetailsActivity.class);
-
-        // Truyền dữ liệu sản phẩm
-        if (product.getId() != null) {
-            intent.putExtra("pid", product.getId());
-        }
-        if (product.getProductId() != null) {
-            intent.putExtra("product_id", product.getProductId());
-        }
-        if (product.getName() != null) {
-            intent.putExtra("name", product.getName());
-        }
-        if (product.getPrice() != null) {
-            intent.putExtra("price", product.getPrice());
-        }
-        if (product.getImage_url() != null) {
-            intent.putExtra("image", product.getImage_url());
-        }
+        if (product.getId() != null) intent.putExtra("pid", product.getId());
+        if (product.getName() != null) intent.putExtra("name", product.getName());
+        if (product.getPrice() != null) intent.putExtra("price", product.getPrice());
+        if (product.getImage_url() != null) intent.putExtra("image", product.getImage_url());
         if (product.getDescription() != null && !product.getDescription().isEmpty()) {
             intent.putStringArrayListExtra("description", new ArrayList<>(product.getDescription()));
         }
-
         context.startActivity(intent);
     }
 
@@ -149,25 +130,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList != null ? productList.size() : 0;
     }
 
-    // Helper methods
-    public void clearProducts() {
-        if (productList != null) {
-            productList.clear();
-            notifyDataSetChanged();
+    public void updateProducts(List<Product> newProducts) {
+        this.productList.clear();
+        if (newProducts != null) {
+            this.productList.addAll(newProducts);
         }
-    }
-
-    public void addProduct(Product product) {
-        if (product != null && productList != null) {
-            productList.add(product);
-            notifyItemInserted(productList.size() - 1);
-        }
-    }
-
-    public void removeProduct(int position) {
-        if (productList != null && position >= 0 && position < productList.size()) {
-            productList.remove(position);
-            notifyItemRemoved(position);
-        }
+        notifyDataSetChanged();
     }
 }

@@ -16,14 +16,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.calmpuchia.userapp.model.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class activity_login extends AppCompatActivity {
     private EditText edtemail, edtpassword;
     private Button btnlogin, btnregister;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +33,8 @@ public class activity_login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
         edtemail = findViewById(R.id.edtemail);
         edtpassword = findViewById(R.id.edtpassword);
         btnlogin = findViewById(R.id.btnlogin);
@@ -81,27 +83,51 @@ public class activity_login extends AppCompatActivity {
             if (task.isSuccessful()) {
                 String userId = mAuth.getCurrentUser().getUid();
 
-                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId);
-                userRef.get().addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        if (task1.getResult().exists()) {
-                            User user = task1.getResult().getValue(User.class);
-                            Prevalent.currentOnlineUser = user;
+                // Sử dụng Firestore để lấy thông tin user
+                firestore.collection("users").document(userId)
+                        .get()
+                        .addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                DocumentSnapshot document = task1.getResult();
+                                if (document.exists()) {
+                                    User user = document.toObject(User.class);
+                                    if (user != null) {
+                                        // Đặt user_id từ document ID
+                                        user.setUserId(document.getId());
+                                        Prevalent.currentOnlineUser = user;
 
-                            Toast.makeText(getApplicationContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(activity_login.this, HomepageActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Không tìm thấy thông tin người dùng!", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Lỗi tải thông tin người dùng: " + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                                        // Cập nhật thời gian đăng nhập cuối
+                                        updateLastLogin(userId);
+
+                                        Toast.makeText(getApplicationContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(activity_login.this, HomepageActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Không tìm thấy thông tin người dùng!", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Lỗi tải thông tin người dùng: " + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
             } else {
                 String errorMessage = task.getException() != null ? task.getException().getMessage() : "Đăng nhập không thành công";
                 Toast.makeText(getApplicationContext(), "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         });
-    }}
+    }
+
+    private void updateLastLogin(String userId) {
+        // Cập nhật thời gian đăng nhập cuối trong Firestore
+        firestore.collection("users").document(userId)
+                .update("last_login", System.currentTimeMillis())
+                .addOnSuccessListener(aVoid -> {
+                    // Không cần thông báo thành công cho việc này
+                })
+                .addOnFailureListener(e -> {
+                    // Log lỗi nhưng không hiển thị cho user
+                    android.util.Log.e("LoginActivity", "Failed to update last login: " + e.getMessage());
+                });
+    }
+}
